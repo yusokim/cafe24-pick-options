@@ -1,0 +1,16 @@
+# Local Cafe24 exports and editor downloads
+*.zip
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Local Codex instructions and settings
+AGENTS.md
+.codex/
+
+# Dependency and build output (not expected for this task)
+node_modules/
+dist/
+coverage/
