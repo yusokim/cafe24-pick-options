@@ -70,6 +70,7 @@
 
 .option-picker__badge:empty,
 .option-picker__description:empty,
+.option-picker__discount-rate:empty,
 .option-picker__price-value:empty {
   display: none;
 }
@@ -117,17 +118,23 @@
 .option-picker__badge {
   flex: 0 0 auto;
   padding: 2px 4px;
-  color: #ff6433;
+  color: var(--option-picker-badge-color, #ff6433);
   font-size: 11px;
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
-  background: #fff0eb;
+  background: var(--option-picker-badge-background, #fff0eb);
 }
 
-.option-picker__price-value {
+.option-picker__price-value,
+.option-picker__discount-rate {
   font-size: 14px;
   line-height: 1.25;
+}
+
+.option-picker__discount-rate {
+  color: #777;
+  font-weight: 600;
 }
 
 .option-picker__description,
