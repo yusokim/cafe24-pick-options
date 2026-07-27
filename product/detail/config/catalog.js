@@ -47,8 +47,13 @@ export const OPTION_CATALOG = Object.freeze({
   })
 });
 
-export function getCurrentProductNo(search = window.location.search) {
-  return new URLSearchParams(search).get('product_no');
+export function getCurrentProductNo(search = window.location.search, doc = document) {
+  const queryProductNo = new URLSearchParams(search).get('product_no');
+  if (queryProductNo) return queryProductNo;
+
+  // Cafe24 SEO URLs do not include `product_no` in the query string. The
+  // rendered native option control always exposes the product number instead.
+  return doc.querySelector('[option_product_no]')?.getAttribute('option_product_no') || null;
 }
 
 export function getOptionPickerConfig(productNo = getCurrentProductNo()) {
