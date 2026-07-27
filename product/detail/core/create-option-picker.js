@@ -1,4 +1,4 @@
-import { createOptionPickerView } from '../ui/option-picker-view.js?v=20260727-3';
+import { createOptionPickerView } from '../ui/option-picker-view.js?v=20260727-4';
 import { createSelectionReconciler } from '../services/selection-reconciler.js';
 
 /**

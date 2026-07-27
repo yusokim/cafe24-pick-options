@@ -53,14 +53,14 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 ```html
             </table>
 
-            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260727-3"></script>
+            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260727-4"></script>
 
             <dl module="product_quantity" class="ec-base-desc quantity">
 ```
 
 상품 설정을 추가하기 전에 업로드한 JavaScript가 `type="module"`로 정상 로드되는지 확인합니다.
 
-카페24 CDN은 같은 경로의 JavaScript 이전 버전을 유지할 수 있습니다. JavaScript 파일을 교체할 때는 `asset-tags.html`과 변경된 모듈을 import하는 파일의 `v=20260727-3` 값을 같은 새 값으로 변경해 업로드합니다.
+카페24 CDN은 같은 경로의 JavaScript 이전 버전을 유지할 수 있습니다. JavaScript 파일을 교체할 때는 `asset-tags.html`과 변경된 모듈을 import하는 파일의 `v=20260727-4` 값을 같은 새 값으로 변경해 업로드합니다.
 
 ## 5. 스토어프론트에서 DOM 어댑터 검증
 
