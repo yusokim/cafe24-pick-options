@@ -1,22 +1,22 @@
-# QA checklist
+# QA 체크리스트
 
-Test the published storefront URL in a logged-out/incognito browser after the edited skin has been set as the representative design.
+편집한 스킨을 대표 디자인으로 설정한 뒤, 로그아웃 또는 시크릿 창에서 실제 스토어프론트 URL을 테스트합니다.
 
-| # | Check | Result | Evidence / notes |
+| # | 확인 항목 | 결과 | 증빙 / 메모 |
 | --- | --- | --- | --- |
-| 1 | The custom pick-and-add option UI is visible. | ☐ | |
-| 2 | Selecting a custom card updates the native Cafe24 option and purchase flow. | ☐ | |
-| 3 | Repeated clicks and reselection do not create duplicates or errors. | ☐ | |
-| 4 | The `_1`, `_2` suffix variants enforce the per-group add limit. | ☐ | |
-| 5 | Option-specific price/additional price is correctly shown by Cafe24. | ☐ | |
-| 6 | Quantity, total, cart, and direct purchase work. | ☐ | |
-| 7 | Selected and disabled states are clearly shown. | ☐ | |
-| 8 | Copy, badges, descriptions, limits, and display prices are configurable. | ☐ | |
-| 9 | Layout works at desktop, 768px, and 375px widths. | ☐ | |
+| 1 | 골라담기 형태의 커스텀 옵션 UI가 정상 노출된다. | ☐ | |
+| 2 | 커스텀 카드 선택 시 카페24 기본 옵션과 구매 흐름이 함께 갱신된다. | ☐ | |
+| 3 | 반복 클릭과 재선택 시 중복 선택상품 또는 오류가 발생하지 않는다. | ☐ | |
+| 4 | `_1`, `_2` suffix 기준으로 개입수별 추가 가능 횟수가 제한된다. | ☐ | |
+| 5 | 옵션별 가격·추가금액이 카페24에서 의도대로 표시된다. | ☐ | |
+| 6 | 수량, 총금액, 장바구니, 바로구매가 정상 동작한다. | ☐ | |
+| 7 | 선택 상태와 비활성 상태가 명확히 표시된다. | ☐ | |
+| 8 | 문구, 뱃지, 설명, 제한, 노출 가격을 설정 파일에서 변경할 수 있다. | ☐ | |
+| 9 | 데스크톱, 768px, 375px 폭에서 레이아웃이 정상 동작한다. | ☐ | |
 
-## Evidence to capture
+## 녹화할 증빙
 
-- Custom-card selection updating a native selected-product row.
-- A group reaching its `_1`, `_2` limit and becoming disabled.
-- Removing a native selected-product row and the custom-card state recovering.
-- Cart or direct-purchase action after a selection.
+- 커스텀 카드 선택 후 카페24 선택상품 행이 생성되는 장면
+- 한 그룹이 `_1`, `_2` 제한에 도달해 비활성화되는 장면
+- 카페24 선택상품 행을 삭제했을 때 커스텀 카드 상태가 복구되는 장면
+- 선택 후 장바구니 또는 바로구매를 실행하는 장면

@@ -1,40 +1,40 @@
-# Cafe24 template integration
+# 카페24 템플릿 연동 방법
 
-The Basic-skin template already contains the two Cafe24 areas the option picker needs. Do not replace either one.
+베이직 스킨 템플릿에는 옵션 피커가 필요한 카페24 영역이 이미 존재합니다. 두 영역을 교체하거나 삭제하지 마세요.
 
-## 1. Mark the native option table (optional)
+## 1. 기본 옵션 테이블에 마커 추가 (선택)
 
-In the template's existing option table, add the marked attribute only:
+기존 옵션 테이블에 아래 속성만 추가할 수 있습니다.
 
 ```html
 <table border="1" summary="" module="product_option" data-option-picker-native-options>
 ```
 
-Its native option row contains `{$form.option}`. It must remain in the HTML even when the custom UI eventually hides it visually. The tested Basic skin is also found automatically through `table.xans-product-option .ec-product-button`, so this marker is only needed if the skin markup differs.
+이 테이블의 기본 옵션 행에는 `{$form.option}`이 포함되어 있습니다. 커스텀 UI로 기본 옵션을 시각적으로 숨기더라도 해당 DOM은 반드시 유지해야 합니다. 테스트한 베이직 스킨은 `table.xans-product-option .ec-product-button`으로 자동 탐색되므로, 마커는 스킨 구조가 다를 때만 필요합니다.
 
-## 2. Insert the custom row
+## 2. 커스텀 옵션 행 삽입
 
-Inside the first `<tbody module="product_option">`, insert the contents of `detail-snippet.html` immediately after the existing native option `<tr>`. It is a `<tr>`, so it keeps the table markup valid.
+첫 번째 `<tbody module="product_option">` 내부에서 기존 기본 옵션 `<tr>` 바로 다음에 `detail-snippet.html` 내용을 삽입합니다. 스니펫은 `<tr>`이므로 테이블 마크업을 유효하게 유지합니다.
 
-## 3. Mark Cafe24's selected-product area (optional)
+## 3. 카페24 선택상품 영역에 마커 추가 (선택)
 
-Add the attribute to the existing total container:
+기존 총 상품 영역에 아래 속성을 추가할 수 있습니다.
 
 ```html
 <div id="{$total.total_id}" class="{$total.total_display|display}" data-option-picker-selected-list>
 ```
 
-Cafe24 appends selected option rows inside this container. The picker observes it and never creates or removes those rows itself. The tested Basic skin uses `#totalProducts`, which is detected automatically.
+카페24는 이 컨테이너 안에 선택상품 행을 추가합니다. 옵션 피커는 이 영역을 관찰만 하며 선택상품 행을 직접 생성하거나 삭제하지 않습니다. 테스트한 베이직 스킨은 `#totalProducts`를 사용하므로 자동 탐색됩니다.
 
-## 4. Load assets
+## 4. 자산 로드
 
-Upload the JS/CSS files while preserving their import paths, or change the asset paths in `detail-snippet.html` to match the Smart Design asset location. Test that the browser accepts `type="module"` for the uploaded JavaScript before adding product configuration.
+JS·CSS 파일을 import 경로가 유지되도록 업로드하거나, 스마트디자인의 실제 자산 위치에 맞게 `detail-snippet.html`의 경로를 변경합니다. 상품 설정을 추가하기 전에 업로드한 JavaScript가 `type="module"`로 정상 로드되는지 확인합니다.
 
-## 5. Verify the DOM adapter from the storefront
+## 5. 스토어프론트에서 DOM 어댑터 검증
 
-The test product (product number `11`) renders text-button options as `.ec-product-button > li` and its selected-product container as `#totalProducts`. Inspect the live storefront after upload and adjust `adapters/cafe24-product.js` only if the rendered structure differs:
+테스트 상품(상품번호 `11`)은 `.ec-product-button > li`로 텍스트 버튼 옵션을 렌더링하고, 선택상품 컨테이너로 `#totalProducts`를 사용합니다. 업로드 후 스토어프론트를 점검해 구조가 다를 때만 `adapters/cafe24-product.js`를 조정합니다.
 
-- Locate and invoke the real native control for an exact option value.
-- Read exact option values from Cafe24-generated selected-product rows.
+- 실제 옵션값과 일치하는 카페24 기본 컨트롤을 찾아 정상 클릭 경로로 선택합니다.
+- 카페24가 생성한 선택상품 행에서 실제 옵션값을 읽습니다.
 
-The rest of the modules should not need Cafe24 selector changes.
+나머지 모듈은 카페24 선택자 변경 없이 유지하는 것을 목표로 합니다.
