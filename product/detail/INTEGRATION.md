@@ -41,7 +41,18 @@
 /js/custom/option-picker/utils/dom.js
 ```
 
-`asset-tags.html`의 내용을 옵션 테이블 **밖**에 삽입합니다. 권장 위치는 `module="product_detail"`의 닫는 태그 바로 앞입니다. 상품 설정을 추가하기 전에 업로드한 JavaScript가 `type="module"`로 정상 로드되는지 확인합니다.
+`asset-tags.html`의 내용을 옵션 테이블 **밖**에 삽입합니다. 제공받은 `detail.html`에서는 옵션 테이블의 닫는 `</table>` 바로 다음, `<dl module="product_quantity" ...>` 바로 전에 넣습니다.
+
+```html
+            </table>
+
+            <link rel="stylesheet" href="/css/custom/option-picker.css">
+            <script type="module" src="/js/custom/option-picker/option-picker.js"></script>
+
+            <dl module="product_quantity" class="ec-base-desc quantity">
+```
+
+상품 설정을 추가하기 전에 업로드한 JavaScript가 `type="module"`로 정상 로드되는지 확인합니다.
 
 ## 5. 스토어프론트에서 DOM 어댑터 검증
 
