@@ -1,6 +1,6 @@
-import { getOptionPickerConfig } from './config/catalog.js?v=20260727-2';
+import { getOptionPickerConfig } from './config/catalog.js?v=20260727-3';
 import { createCafe24Adapter } from './adapters/cafe24-product.js';
-import { createOptionPicker } from './core/create-option-picker.js?v=20260727-2';
+import { createOptionPicker } from './core/create-option-picker.js?v=20260727-3';
 
 function bootstrap() {
   const root = document.querySelector('[data-option-picker-root]');
