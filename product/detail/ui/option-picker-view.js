@@ -1,5 +1,25 @@
 import { clearElement, createElement } from '../utils/dom.js';
 
+function createBadge(badge) {
+  const label = typeof badge === 'string' ? badge : badge?.label;
+  const badgeElement = createElement('span', {
+    className: 'option-picker__badge',
+    text: label || ''
+  });
+
+  if (typeof badge === 'object' && badge) {
+    if (badge.color) {
+      badgeElement.style.setProperty('--option-picker-badge-color', badge.color);
+    }
+
+    if (badge.backgroundColor) {
+      badgeElement.style.setProperty('--option-picker-badge-background', badge.backgroundColor);
+    }
+  }
+
+  return badgeElement;
+}
+
 export function createOptionPickerView({ root, groups }) {
   let cards = new Map();
 
@@ -26,7 +46,8 @@ export function createOptionPickerView({ root, groups }) {
         const priceLine = createElement('span', { className: 'option-picker__price-line' });
         priceLine.append(
           createElement('strong', { className: 'option-picker__price-value', text: group.displayPrice || '' }),
-          createElement('span', { className: 'option-picker__badge', text: group.badge || '' })
+          createElement('span', { className: 'option-picker__discount-rate', text: group.discountRate || '' }),
+          createBadge(group.badge)
         );
 
         const price = createElement('span', { className: 'option-picker__price' });
