@@ -1,5 +1,5 @@
-import { createOptionPickerView } from '../ui/option-picker-view.js?v=20260727-4';
-import { createSelectionReconciler } from '../services/selection-reconciler.js';
+import { createOptionPickerView } from '../ui/option-picker-view.js?v=20260728-18';
+import { createSelectionReconciler } from '../services/selection-reconciler.js?v=20260728-18';
 
 /**
  * Coordinates rendering and synchronisation. It contains no Cafe24 selector
@@ -9,10 +9,6 @@ export function createOptionPicker({ root, config, adapter }) {
   const view = createOptionPickerView({ root, groups: config.groups });
   const reconciler = createSelectionReconciler({ config, adapter, view });
 
-  function onGroupRequest(groupId) {
-    reconciler.requestNextOption(groupId);
-  }
-
   return {
     mount() {
       if (!adapter.isReady()) {
@@ -20,7 +16,13 @@ export function createOptionPicker({ root, config, adapter }) {
         return;
       }
 
-      view.render(onGroupRequest);
+      view.render({
+        onGroupRequest: (groupId) => reconciler.requestInitialOption(groupId),
+        onGroupIncrement: (groupId) => reconciler.incrementGroup(groupId),
+        onGroupDecrement: (groupId) => reconciler.decrementGroup(groupId),
+        onGroupRemove: (groupId) => reconciler.clearGroup(groupId)
+      });
+      adapter.hideSelectedProducts?.();
       reconciler.start();
     },
     destroy() {
