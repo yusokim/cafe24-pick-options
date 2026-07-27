@@ -1,23 +1,50 @@
 /**
  * The only module allowed to know Cafe24 DOM selectors and events.
  *
- * Mark the native option table with `data-option-picker-native-options` and
- * the `{$total.total_id}` container with `data-option-picker-selected-list`
- * as described in INTEGRATION.md. The exact text-button click implementation
- * is intentionally deferred until it is inspected in the live Basic skin.
+ * The Basic skin used by the test product renders native options as
+ * `.ec-product-button > li` and selected products inside `#totalProducts`.
+ * Data attributes remain supported as an explicit override for a skin whose
+ * markup differs from that structure.
  */
 export function createCafe24Adapter(doc) {
-  const nativeOptionArea = doc.querySelector('[data-option-picker-native-options]');
-  const selectedProductArea = doc.querySelector('[data-option-picker-selected-list]');
+  const nativeOptionArea = doc.querySelector(
+    '[data-option-picker-native-options], table.xans-product-option'
+  );
+  const selectedProductArea = doc.querySelector(
+    '[data-option-picker-selected-list], #totalProducts'
+  );
+
+  function getNativeOptionItems() {
+    if (!nativeOptionArea) return [];
+
+    return Array.from(nativeOptionArea.querySelectorAll('.ec-product-button > li'));
+  }
+
+  function getOptionValue(item) {
+    return item.querySelector('span')?.textContent.trim() || '';
+  }
+
+  function getKnownOptionValues() {
+    return getNativeOptionItems().map(getOptionValue).filter(Boolean);
+  }
 
   return {
     isReady() {
-      return Boolean(nativeOptionArea && selectedProductArea);
+      return Boolean(selectedProductArea && getNativeOptionItems().length);
     },
     selectOptionValue(optionValue) {
-      // TODO: Find the native Cafe24 text-button for `optionValue`, then invoke
-      // its normal click path. Do not synthesize selected-product rows here.
-      console.warn('[option-picker] Native option selection is not connected yet.', optionValue);
+      const nativeItem = getNativeOptionItems().find(
+        (item) => getOptionValue(item) === optionValue
+      );
+      const nativeLink = nativeItem?.querySelector('a');
+
+      if (!nativeLink || nativeItem.classList.contains('ec-product-soldout')) {
+        console.warn('[option-picker] Native option is unavailable.', optionValue);
+        return false;
+      }
+
+      nativeLink.click();
+      return true;
     },
     observeSelectedProducts(callback) {
       const observer = new MutationObserver(callback);
@@ -25,9 +52,13 @@ export function createCafe24Adapter(doc) {
       return () => observer.disconnect();
     },
     getSelectedOptionValues() {
-      // TODO: Extract selected option labels from Cafe24's generated rows.
-      // This must remain the source of truth for card state.
-      return [];
+      if (!selectedProductArea) return [];
+
+      const selectedProductText = selectedProductArea.textContent;
+
+      return getKnownOptionValues().filter((optionValue) =>
+        selectedProductText.includes(optionValue)
+      );
     }
   };
 }
