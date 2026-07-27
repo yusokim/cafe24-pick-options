@@ -12,7 +12,7 @@
 - `product/detail/core/create-option-picker.js`: 어댑터·상태 동기화·UI 모듈 조합
 - `product/detail/option-picker.css`: 옵션 피커 범위에 한정된 PC/MO 스타일
 - `product/detail/detail-snippet.html`: 카페24 `/product/detail.html`의 옵션 테이블에 삽입할 마크업
-- `product/detail/asset-tags.html`: 옵션 테이블 밖에 삽입할 CSS·JavaScript 로드 태그
+- `product/detail/asset-tags.html`: 옵션 테이블 밖에 삽입할 JavaScript 모듈 로드 태그
 - `product/detail/INTEGRATION.md`: 템플릿 삽입 위치와 연동 절차
 
 커스텀 UI는 표시와 사용자 상호작용만 담당합니다. 실제 선택상품 행 생성, 가격 계산, 재고, 수량, 장바구니, 바로구매는 카페24 기본 로직이 담당합니다.
