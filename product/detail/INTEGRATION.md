@@ -58,12 +58,18 @@
 /js/custom/option-picker/utils/dom.js
 ```
 
-카페24의 CSS 최적화 번들이 새 파일을 즉시 반영하지 않는 경우가 있으므로, `<!--@css(...)-->` 대신 직접 `<link>`로 불러옵니다. JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가하면 안 됩니다. `asset-tags.html`의 내용을 옵션 테이블 **밖**에 삽입합니다. 제공받은 `detail.html`에서는 옵션 테이블의 닫는 `</table>` 바로 다음, `<dl module="product_quantity" ...>` 바로 전에 넣습니다.
+CSS는 `detail.html` 상단의 기존 CSS 지시문 바로 다음에 추가합니다.
+
+```html
+<!--@css(/css/module/product/detail.css)-->
+<!--@css(/css/custom/option-picker.css)-->
+```
+
+JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가하면 안 됩니다. `asset-tags.html`의 내용을 옵션 테이블 **밖**에 삽입합니다. 제공받은 `detail.html`에서는 옵션 테이블의 닫는 `</table>` 바로 다음, `<dl module="product_quantity" ...>` 바로 전에 넣습니다.
 
 ```html
             </table>
 
-            <link rel="stylesheet" href="/css/custom/option-picker.css?v=20260728-18">
             <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260728-18"></script>
 
             <dl module="product_quantity" class="ec-base-desc quantity">
