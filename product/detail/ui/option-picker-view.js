@@ -36,11 +36,13 @@ export function createOptionPickerView({ root, groups }) {
           createElement('span', { className: 'option-picker__count', text: '' })
         );
 
-        button.append(
+        const choice = createElement('span', { className: 'option-picker__choice' });
+        choice.append(
           createElement('span', { className: 'option-picker__radio', 'aria-hidden': 'true' }),
-          createElement('strong', { className: 'option-picker__label', text: group.label }),
-          price
+          createElement('strong', { className: 'option-picker__label', text: group.label })
         );
+
+        button.append(choice, price);
 
         button.addEventListener('click', () => onGroupRequest(group.id));
         cards.set(group.id, button);
