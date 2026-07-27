@@ -11,7 +11,8 @@
 - `product/detail/ui/option-picker-view.js`: 카드 렌더링과 접근 가능한 상태 표시
 - `product/detail/core/create-option-picker.js`: 어댑터·상태 동기화·UI 모듈 조합
 - `product/detail/option-picker.css`: 옵션 피커 범위에 한정된 PC/MO 스타일
-- `product/detail/detail-snippet.html`: 카페24 `/product/detail.html`에 삽입할 마크업과 자산 태그
+- `product/detail/detail-snippet.html`: 카페24 `/product/detail.html`의 옵션 테이블에 삽입할 마크업
+- `product/detail/asset-tags.html`: 옵션 테이블 밖에 삽입할 CSS·JavaScript 로드 태그
 - `product/detail/INTEGRATION.md`: 템플릿 삽입 위치와 연동 절차
 
 커스텀 UI는 표시와 사용자 상호작용만 담당합니다. 실제 선택상품 행 생성, 가격 계산, 재고, 수량, 장바구니, 바로구매는 카페24 기본 로직이 담당합니다.
@@ -19,7 +20,7 @@
 ## 개발 절차
 
 1. 테스트 상품에 요구된 독립 선택형 텍스트 버튼 옵션을 설정합니다.
-2. 스마트디자인에 스니펫을 삽입하고 JS·CSS 자산을 업로드 또는 갱신합니다.
+2. 스마트디자인에 옵션 행 스니펫과 자산 로드 태그를 각각 삽입하고 JS·CSS 자산을 업로드 또는 갱신합니다.
 3. 렌더링된 기본 옵션과 선택상품 DOM을 확인하고, 베이직 스킨 구조가 다를 경우 `cafe24-product.js`의 어댑터 선택자만 조정합니다.
 4. 편집한 스킨을 대표 디자인으로 설정한 뒤, 로그아웃 또는 시크릿 창의 스토어프론트 URL에서 확인합니다.
 

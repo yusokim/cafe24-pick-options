@@ -26,9 +26,22 @@
 
 카페24는 이 컨테이너 안에 선택상품 행을 추가합니다. 옵션 피커는 이 영역을 관찰만 하며 선택상품 행을 직접 생성하거나 삭제하지 않습니다. 테스트한 베이직 스킨은 `#totalProducts`를 사용하므로 자동 탐색됩니다.
 
-## 4. 자산 로드
+## 4. 자산 업로드와 로드 태그 삽입
 
-JS·CSS 파일을 import 경로가 유지되도록 업로드하거나, 스마트디자인의 실제 자산 위치에 맞게 `detail-snippet.html`의 경로를 변경합니다. 상품 설정을 추가하기 전에 업로드한 JavaScript가 `type="module"`로 정상 로드되는지 확인합니다.
+스마트디자인 파일 목록에서 아래 경로로 파일을 업로드합니다. JavaScript는 `option-picker.js`의 상대 `import` 경로가 유지되도록 디렉터리 구조를 그대로 보존해야 합니다.
+
+```text
+/css/custom/option-picker.css
+/js/custom/option-picker/option-picker.js
+/js/custom/option-picker/config/catalog.js
+/js/custom/option-picker/core/create-option-picker.js
+/js/custom/option-picker/adapters/cafe24-product.js
+/js/custom/option-picker/services/selection-reconciler.js
+/js/custom/option-picker/ui/option-picker-view.js
+/js/custom/option-picker/utils/dom.js
+```
+
+`asset-tags.html`의 내용을 옵션 테이블 **밖**에 삽입합니다. 권장 위치는 `module="product_detail"`의 닫는 태그 바로 앞입니다. 상품 설정을 추가하기 전에 업로드한 JavaScript가 `type="module"`로 정상 로드되는지 확인합니다.
 
 ## 5. 스토어프론트에서 DOM 어댑터 검증
 
