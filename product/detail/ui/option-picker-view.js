@@ -8,6 +8,12 @@ export function createOptionPickerView({ root, groups }) {
       clearElement(root);
       cards = new Map();
 
+      const header = createElement('div', { className: 'option-picker__header' });
+      header.append(
+        createElement('strong', { className: 'option-picker__title', text: '옵션 선택 (필수)' }),
+        createElement('span', { className: 'option-picker__chevron', 'aria-hidden': 'true' })
+      );
+
       const list = createElement('div', { className: 'option-picker__list' });
       groups.forEach((group) => {
         const button = createElement('button', {
@@ -17,28 +23,23 @@ export function createOptionPickerView({ root, groups }) {
           'aria-pressed': 'false'
         });
 
-        const heading = createElement('span', { className: 'option-picker__heading' });
-        heading.append(
-          createElement('strong', { className: 'option-picker__label', text: group.label }),
+        const priceLine = createElement('span', { className: 'option-picker__price-line' });
+        priceLine.append(
+          createElement('strong', { className: 'option-picker__price-value', text: group.displayPrice || '' }),
           createElement('span', { className: 'option-picker__badge', text: group.badge || '' })
         );
 
         const price = createElement('span', { className: 'option-picker__price' });
         price.append(
-          createElement('strong', { className: 'option-picker__price-value', text: group.displayPrice || '' }),
-          createElement('span', { className: 'option-picker__description', text: group.unitPrice || '' })
-        );
-
-        const content = createElement('span', { className: 'option-picker__content' });
-        content.append(
-          heading,
-          price,
+          priceLine,
+          createElement('span', { className: 'option-picker__description', text: group.unitPrice || '' }),
           createElement('span', { className: 'option-picker__count', text: '' })
         );
 
         button.append(
           createElement('span', { className: 'option-picker__radio', 'aria-hidden': 'true' }),
-          content
+          createElement('strong', { className: 'option-picker__label', text: group.label }),
+          price
         );
 
         button.addEventListener('click', () => onGroupRequest(group.id));
@@ -57,6 +58,10 @@ export function createOptionPickerView({ root, groups }) {
         card.classList.toggle('is-selected', selectedCount > 0);
         card.classList.toggle('is-disabled', isDisabled);
         card.setAttribute('aria-pressed', String(selectedCount > 0));
+        card.setAttribute(
+          'aria-label',
+          `${card.querySelector('.option-picker__label').textContent}, ${selectedCount} / ${limit} 선택`
+        );
         card.querySelector('.option-picker__count').textContent = `${selectedCount} / ${limit} 선택`;
       });
     },
