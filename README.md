@@ -25,4 +25,4 @@ The custom UI is presentation and interaction only. It invokes Cafe24's native o
 
 ## Status
 
-Project rules and source layout are initialized. The implementation files will be added after inspecting the actual Basic-skin option DOM.
+The test product (`product_no=11`) uses Cafe24 text-button options under `.ec-product-button > li` and renders selected products in `#totalProducts`. The adapter is configured for that structure. Verify native selection, deletion, and purchase flows on the storefront after uploading the assets to Smart Design.
