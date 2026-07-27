@@ -10,13 +10,7 @@ export function createOptionPicker({ root, config, adapter }) {
   const reconciler = createSelectionReconciler({ config, adapter, view });
 
   function onGroupRequest(groupId) {
-    const nextOptionValue = reconciler.getNextAvailableOptionValue(groupId);
-
-    if (!nextOptionValue) {
-      return;
-    }
-
-    adapter.selectOptionValue(nextOptionValue);
+    reconciler.requestNextOption(groupId);
   }
 
   return {
