@@ -1,4 +1,4 @@
-import { getOptionPickerConfig } from './config/catalog.js';
+import { getOptionPickerConfig } from './config/catalog.js?v=20260727-1';
 import { createCafe24Adapter } from './adapters/cafe24-product.js';
 import { createOptionPicker } from './core/create-option-picker.js';
 
