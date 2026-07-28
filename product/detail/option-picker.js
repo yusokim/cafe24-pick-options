@@ -1,26 +1,19 @@
 import { getOptionPickerConfig } from './config/catalog.js?v=20260728-18';
-import { createCafe24Adapter } from './adapters/cafe24-product.js?v=20260728-28';
+import { createCafe24Adapter } from './adapters/cafe24-product.js?v=20260728-30';
 import { createOptionPicker } from './core/create-option-picker.js?v=20260728-28';
-import { createMobileOptionSheetView } from './ui/mobile-option-sheet-view.js?v=20260728-28';
+import { createMobileOptionSheetView } from './ui/mobile-option-sheet-view.js?v=20260728-30';
 
 function toPriceNumber(value) {
-  const digits = String(value || '').replace(/[^0-9]/g, '');
+  const priceText = String(value || '').split('(')[0];
+  const digits = priceText.replace(/[^0-9]/g, '');
   return digits ? Number(digits) : null;
 }
 
-function getConfiguredSummaryPrice(config, selectedOptionValues) {
-  let total = 0;
-
-  for (const group of config.groups) {
+function getSelectedSetCount(config, selectedOptionValues) {
+  return config.groups.reduce((total, group) => {
     const selectedIndex = group.optionValues.findIndex((value) => selectedOptionValues.includes(value));
-    if (selectedIndex < 0) continue;
-
-    const price = toPriceNumber(group.summaryPrices?.[selectedIndex]);
-    if (price === null) return null;
-    total += price;
-  }
-
-  return total;
+    return total + (selectedIndex < 0 ? 0 : selectedIndex + 1);
+  }, 0);
 }
 
 function bindMobilePurchaseTriggers(doc, picker, adapter, config) {
@@ -45,16 +38,14 @@ function bindMobilePurchaseTriggers(doc, picker, adapter, config) {
   purchaseAction.prepend(summary);
 
   let summaryFrame;
+  let lastTotalPrice = 0;
   const syncSummary = () => {
     const selectedOptionValues = adapter.getSelectedOptionValues();
-    const selectedSetCount = selectedOptionValues.length;
-    const configuredPrice = getConfiguredSummaryPrice(config, selectedOptionValues);
+    const selectedSetCount = getSelectedSetCount(config, selectedOptionValues);
     const cafe24Price = toPriceNumber(adapter.getTotalPriceText());
-    const price = configuredPrice ?? cafe24Price;
+    if (cafe24Price !== null) lastTotalPrice = cafe24Price;
     setCount.textContent = `총 ${selectedSetCount}세트`;
-    if (price !== null) {
-      totalPrice.textContent = `총 ${new Intl.NumberFormat('ko-KR').format(price)}원`;
-    }
+    totalPrice.textContent = `총 ${new Intl.NumberFormat('ko-KR').format(lastTotalPrice)}원`;
   };
   const scheduleSummarySync = () => {
     cancelAnimationFrame(summaryFrame);

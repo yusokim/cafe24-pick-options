@@ -37,6 +37,7 @@ export function createMobileOptionSheetView({ root, groups }) {
   let showEmptyTrigger = false;
   let lastFocusedElement;
   let closeButton;
+  let inertedElements = [];
 
   function getFocusableElements() {
     return Array.from(layer?.querySelectorAll(
@@ -44,8 +45,47 @@ export function createMobileOptionSheetView({ root, groups }) {
     ) || []).filter((element) => !element.hidden && !element.closest('[hidden]'));
   }
 
+  function setBackgroundInert(isOpen) {
+    inertedElements.forEach(({ element, inert, ariaHidden }) => {
+      element.inert = inert;
+      if (ariaHidden === null) element.removeAttribute('aria-hidden');
+      else element.setAttribute('aria-hidden', ariaHidden);
+    });
+    inertedElements = [];
+    if (!isOpen || !layer) return;
+
+    const purchaseAction = document.querySelector('[data-option-picker-fixed-action="true"]');
+    const interactiveRoots = new Set([layer, purchaseAction].filter(Boolean));
+    const allowedElements = new Set();
+    interactiveRoots.forEach((element) => {
+      for (let current = element; current && current !== document.body; current = current.parentElement) {
+        allowedElements.add(current);
+      }
+    });
+
+    function inertSiblings(parent) {
+      Array.from(parent.children).forEach((child) => {
+        if (interactiveRoots.has(child)) return;
+        if (allowedElements.has(child)) {
+          inertSiblings(child);
+          return;
+        }
+        inertedElements.push({
+          element: child,
+          inert: child.inert,
+          ariaHidden: child.getAttribute('aria-hidden')
+        });
+        child.inert = true;
+        child.setAttribute('aria-hidden', 'true');
+      });
+    }
+
+    inertSiblings(document.body);
+  }
+
   function setOpen(isOpen, origin = trigger) {
     if (!layer) return;
+    setBackgroundInert(isOpen);
     layer.hidden = !isOpen;
     trigger.setAttribute('aria-expanded', String(isOpen));
     document.documentElement.classList.toggle('option-picker-sheet-open', isOpen);
@@ -210,6 +250,7 @@ export function createMobileOptionSheetView({ root, groups }) {
     },
     open(origin) { setOpen(true, origin); },
     destroy() {
+      setBackgroundInert(false);
       document.documentElement.classList.remove('option-picker-sheet-open');
       clearElement(root);
       cards.clear();
