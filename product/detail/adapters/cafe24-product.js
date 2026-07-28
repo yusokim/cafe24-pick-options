@@ -25,6 +25,14 @@ export function createCafe24Adapter(doc) {
     return item.querySelector('span')?.textContent.trim() || '';
   }
 
+  function rowContainsOptionValue(row, optionValue) {
+    const escapedOptionValue = optionValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const optionValuePattern = new RegExp(
+      `(^|[\\s\\-:])${escapedOptionValue}(?=$|[\\s(,+])`
+    );
+    return optionValuePattern.test(row.textContent.replace(/\s+/g, ' ').trim());
+  }
+
   function getKnownOptionValues() {
     return getNativeOptionItems().map(getOptionValue).filter(Boolean);
   }
@@ -33,7 +41,7 @@ export function createCafe24Adapter(doc) {
     if (!selectedProductArea) return null;
 
     return Array.from(selectedProductArea.querySelectorAll('tr, [id^="option_box"]')).find((row) =>
-      row.textContent.includes(optionValue)
+      rowContainsOptionValue(row, optionValue)
     );
   }
 
@@ -89,6 +97,8 @@ export function createCafe24Adapter(doc) {
       selectedProductArea?.classList.add('option-picker__native-selected-products');
     },
     observeSelectedProducts(callback) {
+      if (!selectedProductArea) return () => {};
+
       const observer = new MutationObserver(callback);
       observer.observe(selectedProductArea, { childList: true, subtree: true, characterData: true });
       return () => observer.disconnect();
@@ -96,10 +106,10 @@ export function createCafe24Adapter(doc) {
     getSelectedOptionValues() {
       if (!selectedProductArea) return [];
 
-      const selectedProductText = selectedProductArea.textContent;
+      const selectedProductRows = selectedProductArea.querySelectorAll('tr, [id^="option_box"]');
 
       return getKnownOptionValues().filter((optionValue) =>
-        selectedProductText.includes(optionValue)
+        Array.from(selectedProductRows).some((row) => rowContainsOptionValue(row, optionValue))
       );
     },
     getPurchaseAction,

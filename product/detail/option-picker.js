@@ -1,7 +1,7 @@
-import { getOptionPickerConfig } from './config/catalog.js?v=20260728-18';
-import { createCafe24Adapter } from './adapters/cafe24-product.js?v=20260728-30';
-import { createOptionPicker } from './core/create-option-picker.js?v=20260728-28';
-import { createMobileOptionSheetView } from './ui/mobile-option-sheet-view.js?v=20260728-30';
+import { getOptionPickerConfig } from './config/catalog.js';
+import { createCafe24Adapter } from './adapters/cafe24-product.js';
+import { createOptionPicker } from './core/create-option-picker.js';
+import { createMobileOptionSheetView } from './ui/mobile-option-sheet-view.js';
 
 function toPriceNumber(value) {
   const priceText = String(value || '').split('(')[0];

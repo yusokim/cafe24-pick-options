@@ -233,8 +233,11 @@ export function createMobileOptionSheetView({ root, groups }) {
         if (!card || !selection) return;
         card.disabled = isSelectionDisabled;
         card.classList.toggle('is-selected', selectedCount > 0);
+        card.classList.toggle('is-updating', isUpdating);
         card.setAttribute('aria-pressed', String(selectedCount > 0));
+        card.setAttribute('aria-busy', String(isUpdating));
         selection.item.hidden = selectedCount === 0;
+        selection.item.setAttribute('aria-busy', String(isUpdating));
         selection.count.textContent = String(selectedCount);
         selection.decrement.disabled = isUpdating || selectedCount === 0;
         selection.increment.disabled = isUpdating || selectedCount >= limit;
