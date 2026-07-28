@@ -12,6 +12,8 @@
 
 이 테이블의 기본 옵션 행에는 `{$form.option}`이 포함되어 있습니다. 커스텀 UI로 기본 옵션을 시각적으로 숨기더라도 해당 DOM은 반드시 유지해야 합니다. 테스트한 베이직 스킨은 `table.xans-product-option .ec-product-button`으로 자동 탐색되므로, 마커는 스킨 구조가 다를 때만 필요합니다.
 
+기본 옵션 행은 템플릿을 수정하지 않습니다. `option-picker.css`가 `table.xans-product-option tr:has(.ec-product-button)` 선택자로 해당 행만 화면에서 숨깁니다. 카페24 옵션 클릭과 선택상품 생성에 필요한 DOM·이벤트는 그대로 유지됩니다.
+
 ### suffix 옵션 금액 설정
 
 커스텀 피커는 한 개입수 그룹에서 카페24 suffix 옵션 하나만 선택합니다. 카운터가 `1`이면 `_1`, `2`이면 `_2`를 선택하므로 suffix는 해당 개입수의 **누적 수량과 가격 단계**입니다. 기본 판매가가 `24,700원`인 테스트 상품의 예시는 아래와 같습니다.
@@ -55,6 +57,7 @@
 /js/custom/option-picker/adapters/cafe24-product.js
 /js/custom/option-picker/services/selection-reconciler.js
 /js/custom/option-picker/ui/option-picker-view.js
+/js/custom/option-picker/ui/mobile-option-sheet-view.js
 /js/custom/option-picker/utils/dom.js
 ```
 
@@ -70,7 +73,7 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 ```html
             </table>
 
-            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260728-18"></script>
+            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260728-31"></script>
 
             <dl module="product_quantity" class="ec-base-desc quantity">
 ```
@@ -78,6 +81,8 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 상품 설정을 추가하기 전에 업로드한 JavaScript가 `type="module"`로 정상 로드되는지 확인합니다.
 
 카페24 CDN은 같은 경로의 JavaScript 이전 버전을 유지할 수 있습니다. JavaScript 파일을 교체할 때는 `asset-tags.html`과 변경된 모듈을 import하는 파일의 `v` 값을 같은 새 값으로 변경해 업로드합니다.
+
+`767px` 이하에서는 같은 `option-picker.js`가 옵션 피커를 바텀시트로 렌더링합니다. 별도 모바일 템플릿이나 JavaScript를 추가하지 않습니다. 선택상품이 없을 때 장바구니·구매 버튼을 누르면 바텀시트가 열리고, 옵션 선택이 카페24에 반영된 뒤에는 기존 구매 흐름을 사용합니다. 구매 버튼 영역을 찾지 못하면 옵션 선택 트리거를 대신 노출합니다.
 
 ## 5. 스토어프론트에서 DOM 어댑터 검증
 
@@ -87,3 +92,13 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 - 카페24가 생성한 선택상품 행에서 실제 옵션값을 읽습니다.
 
 나머지 모듈은 카페24 선택자 변경 없이 유지하는 것을 목표로 합니다.
+
+## 상품상세 본문 반응형 레이아웃
+
+상품 이미지와 정보 영역까지 시안에 맞춰 반응형으로 적용하려면 `product-detail-responsive.css`를 `/css/custom/`에 업로드하고, 기존 상품상세 CSS 지시문 다음에 아래를 추가합니다.
+
+```html
+<!--@css(/css/custom/product-detail-responsive.css)-->
+```
+
+이 스타일은 현재 PC 상품상세 템플릿에서 데스크톱 이미지·정보 2열, `767px` 이하 이미지 다음 정보 영역이 이어지는 1열 레이아웃만 담당합니다. 상품 구매·가격·장바구니 동작은 카페24 기본 로직을 변경하지 않습니다.
