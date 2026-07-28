@@ -5,15 +5,15 @@ import { createSelectionReconciler } from '../services/selection-reconciler.js?v
  * Coordinates rendering and synchronisation. It contains no Cafe24 selector
  * knowledge and no product-specific content.
  */
-export function createOptionPicker({ root, config, adapter }) {
-  const view = createOptionPickerView({ root, groups: config.groups });
+export function createOptionPicker({ root, config, adapter, createView = createOptionPickerView }) {
+  const view = createView({ root, groups: config.groups });
   const reconciler = createSelectionReconciler({ config, adapter, view });
 
   return {
     mount() {
       if (!adapter.isReady()) {
         console.warn('[option-picker] Native Cafe24 option or total area was not found.');
-        return;
+        return false;
       }
 
       view.render({
@@ -24,10 +24,14 @@ export function createOptionPicker({ root, config, adapter }) {
       });
       adapter.hideSelectedProducts?.();
       reconciler.start();
+      return true;
     },
     destroy() {
       reconciler.stop();
       view.destroy();
+    },
+    view() {
+      return view;
     }
   };
 }
