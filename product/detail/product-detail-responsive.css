@@ -1,0 +1,187 @@
+/* Product-detail layout only. It does not replace Cafe24 purchase behaviour. */
+.xans-product-detail .detailArea {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.8fr);
+  gap: clamp(32px, 5vw, 80px);
+  align-items: start;
+  padding: 0;
+}
+
+.xans-product-detail .imgArea,
+.xans-product-detail .infoArea {
+  min-width: 0;
+}
+
+.xans-product-detail .imgArea {
+  float: none;
+  width: auto;
+  margin: 0;
+}
+
+.xans-product-detail .imgArea .keyImg {
+  width: 100%;
+}
+
+.xans-product-detail .imgArea .keyImg img {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+}
+
+.xans-product-detail .infoArea > table,
+.xans-product-detail .infoArea > div,
+.xans-product-detail .infoArea > dl {
+  width: 100%;
+}
+
+.xans-product-detail .infoArea table {
+  table-layout: fixed;
+}
+
+.xans-product-detail .infoArea table th {
+  width: 96px;
+  vertical-align: top;
+}
+
+@media (max-width: 767px) {
+  /* Override the Basic skin's desktop-only global frame on narrow screens. */
+  body {
+    min-width: 0 !important;
+  }
+
+  #header .inner,
+  #container,
+  #footer .inner {
+    width: auto !important;
+    margin-right: 16px !important;
+    margin-left: 16px !important;
+  }
+
+  #wrap {
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  #sidebar,
+  #banner,
+  #quick {
+    display: none;
+  }
+
+  #contents {
+    float: none !important;
+    width: auto !important;
+  }
+
+  #header .topArea {
+    display: flex;
+    align-items: center;
+    height: 56px !important;
+    padding: 0 !important;
+    text-align: left;
+  }
+
+  #header,
+  #header .inner {
+    height: 56px !important;
+    overflow: hidden;
+  }
+
+  #header::before,
+  #header::after {
+    display: none;
+  }
+
+  #header .xans-layout-logotop {
+    width: auto !important;
+    margin: 0 !important;
+    text-align: left !important;
+  }
+
+  #header .xans-layout-logotop a {
+    font-size: 18px !important;
+    line-height: 56px;
+  }
+
+  #header .xans-layout-searchheader {
+    display: none !important;
+  }
+
+  #header .special,
+  #header .link,
+  #header .xans-layout-statelogoff,
+  #header .xans-layout-statelogon {
+    display: none;
+  }
+
+  .path {
+    display: none !important;
+  }
+
+  .xans-product-detail .headingArea {
+    margin: 0 16px 12px;
+  }
+
+  .xans-product-detail .detailArea {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .xans-product-detail .imgArea {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .xans-product-detail .imgArea .keyImg,
+  .xans-product-detail .imgArea .thumbnail {
+    display: block;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .xans-product-detail .imgArea .thumbnail > a {
+    display: block;
+  }
+
+  .xans-product-detail .imgArea .keyImg img {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .xans-product-detail .imgArea .listImg,
+  .xans-product-detail .imgArea .control {
+    width: calc(100% - 32px) !important;
+    margin-right: 16px;
+    margin-left: 16px;
+  }
+
+  .xans-product-detail .imgArea > .ec-base-button,
+  .xans-product-detail .imgArea .likeButton {
+    margin-right: 16px;
+    margin-left: 16px;
+  }
+
+  .xans-product-detail .infoArea {
+    align-self: stretch;
+    width: 100% !important;
+    padding: 0 16px;
+  }
+
+  .xans-product-detail .infoArea table th {
+    width: 84px;
+  }
+
+  .xans-product-detail .infoArea table th,
+  .xans-product-detail .infoArea table td {
+    word-break: keep-all;
+  }
+
+  .xans-product-detail .infoArea .guideArea,
+  .xans-product-detail .infoArea .totalPrice {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+}

@@ -11,6 +11,7 @@
 - `product/detail/ui/option-picker-view.js`: 카드 렌더링과 접근 가능한 상태 표시
 - `product/detail/core/create-option-picker.js`: 어댑터·상태 동기화·UI 모듈 조합
 - `product/detail/option-picker.css`: 옵션 피커 범위에 한정된 PC/MO 스타일
+- `product/detail/product-detail-responsive.css`: 상품 이미지·정보 영역의 공용 반응형 레이아웃
 - `product/detail/detail-snippet.html`: 카페24 `/product/detail.html`의 옵션 테이블에 삽입할 마크업
 - `product/detail/asset-tags.html`: 옵션 테이블 밖에 삽입할 JavaScript 모듈 로드 태그
 - `product/detail/INTEGRATION.md`: 템플릿 삽입 위치와 연동 절차
