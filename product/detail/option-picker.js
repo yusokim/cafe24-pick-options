@@ -1,7 +1,7 @@
 import { getOptionPickerConfig } from './config/catalog.js?v=20260728-18';
 import { createCafe24Adapter } from './adapters/cafe24-product.js?v=20260728-18';
 import { createOptionPicker } from './core/create-option-picker.js?v=20260728-23';
-import { createMobileOptionSheetView } from './ui/mobile-option-sheet-view.js?v=20260728-23';
+import { createMobileOptionSheetView } from './ui/mobile-option-sheet-view.js?v=20260728-24';
 
 function bindMobilePurchaseTriggers(doc, picker) {
   const purchaseAction = Array.from(doc.querySelectorAll('.xans-product-action')).find((element) => (

@@ -32,7 +32,6 @@ export function createMobileOptionSheetView({ root, groups }) {
   let selections = new Map();
   let layer;
   let trigger;
-  let doneButton;
   let selectedTotal = 0;
 
   function setOpen(isOpen) {
@@ -139,10 +138,7 @@ export function createMobileOptionSheetView({ root, groups }) {
         selectedList.append(item);
       });
 
-      doneButton = createElement('button', { className: 'option-picker-sheet__done', type: 'button', text: '선택완료', disabled: '' });
-      doneButton.hidden = true;
-      doneButton.addEventListener('click', () => setOpen(false));
-      sheet.append(header, list, selectedList, doneButton);
+      sheet.append(header, list, selectedList);
       layer.append(backdrop, sheet);
       root.append(trigger, layer);
     },
@@ -151,8 +147,6 @@ export function createMobileOptionSheetView({ root, groups }) {
       trigger.querySelector('.option-picker-sheet__trigger-label').textContent = selectedTotal
         ? `선택한 옵션 ${selectedTotal}개` : '옵션 선택 (필수)';
       trigger.hidden = selectedTotal === 0;
-      doneButton.disabled = selectedTotal === 0 || states.some(({ isUpdating }) => isUpdating);
-      doneButton.hidden = selectedTotal === 0;
       layer.querySelector('.option-picker-sheet__selected-list').hidden = selectedTotal === 0;
       states.forEach(({ id, selectedCount, limit, isSelectionDisabled, isUpdating }) => {
         const card = cards.get(id);

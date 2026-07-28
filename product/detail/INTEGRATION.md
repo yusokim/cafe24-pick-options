@@ -73,7 +73,7 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 ```html
             </table>
 
-            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260728-23"></script>
+            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260728-24"></script>
 
             <dl module="product_quantity" class="ec-base-desc quantity">
 ```

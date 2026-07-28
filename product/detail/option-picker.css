@@ -352,8 +352,7 @@ table.xans-product-option tr:has(.ec-product-button) {
   .option-picker-sheet__layer[hidden],
   .option-picker-sheet__selected-list[hidden],
   .option-picker-sheet__selected-item[hidden],
-  .option-picker-sheet__trigger[hidden],
-  .option-picker-sheet__done[hidden] {
+  .option-picker-sheet__trigger[hidden] {
     display: none !important;
   }
 
@@ -433,7 +432,7 @@ table.xans-product-option tr:has(.ec-product-button) {
     flex-direction: column;
     height: min(76dvh, 680px);
     padding-top: 36px;
-    overflow: auto;
+    overflow: hidden;
     background: #fff;
     border-radius: 20px 20px 0 0;
   }
@@ -485,6 +484,16 @@ table.xans-product-option tr:has(.ec-product-button) {
   .option-picker-sheet__remove svg {
     width: 24px;
     height: 24px;
+  }
+
+  .option-picker-sheet__remove {
+    width: 20px;
+    height: 20px;
+  }
+
+  .option-picker-sheet__remove svg {
+    width: 20px;
+    height: 20px;
   }
 
   .option-picker-sheet__list {
@@ -585,14 +594,20 @@ table.xans-product-option tr:has(.ec-product-button) {
 
   .option-picker-sheet__selected-list {
     display: grid;
+    flex: 1 1 auto;
+    align-content: start;
+    grid-auto-rows: max-content;
     gap: 8px;
-    padding: 12px 20px;
+    min-height: 0;
+    padding: 8px 20px calc(8px + var(--option-picker-mobile-action-height));
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .option-picker-sheet__selected-item {
     display: grid;
-    gap: 12px;
-    padding: 12px;
+    gap: 8px;
+    padding: 10px 12px;
     background: #f4f4f4;
     border-radius: 4px;
   }
@@ -604,12 +619,12 @@ table.xans-product-option tr:has(.ec-product-button) {
     justify-content: space-between;
   }
 
-  .option-picker-sheet__selected-label { font-size: 16px; }
-  .option-picker-sheet__summary-price { font-size: 18px; }
+  .option-picker-sheet__selected-label { font-size: 14px; }
+  .option-picker-sheet__summary-price { font-size: 16px; }
   .option-picker-sheet__quantity-controls {
     display: inline-grid;
-    grid-template-columns: 32px 40px 32px;
-    height: 32px;
+    grid-template-columns: 28px 36px 28px;
+    height: 28px;
     overflow: hidden;
     background: #fff;
     border: 1px solid #dedede;
@@ -618,29 +633,13 @@ table.xans-product-option tr:has(.ec-product-button) {
   .option-picker-sheet__quantity-button {
     padding: 0;
     color: #525252;
-    font-size: 20px;
+    font-size: 16px;
     background: #fff;
     border: 0;
   }
-  .option-picker-sheet__count { align-self: center; text-align: center; }
+  .option-picker-sheet__count { align-self: center; font-size: 12px; text-align: center; }
   .option-picker-sheet__quantity-button:disabled,
   .option-picker-sheet__remove:disabled { color: #bdbdbd; }
-
-  .option-picker-sheet__done {
-    min-height: 52px;
-    margin: auto 20px 16px;
-    color: #fff;
-    font-size: 16px;
-    font-weight: 700;
-    background: #222;
-    border: 0;
-    border-radius: 4px;
-  }
-
-  .option-picker-sheet__done:disabled {
-    color: #bdbdbd;
-    background: #e8e8e8;
-  }
 
   .option-picker-sheet-open { overflow: hidden; }
 
