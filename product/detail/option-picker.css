@@ -1,7 +1,13 @@
 .option-picker {
   box-sizing: border-box;
   width: 100%;
-  max-width: 392px;
+}
+
+/* The custom row occupies both native option-table columns. */
+.optionPickerRow > td {
+  padding: 0 !important;
+  border: 0 !important;
+  vertical-align: top;
 }
 
 /*
@@ -165,6 +171,10 @@ table.xans-product-option tr:has(.ec-product-button) {
 
 .option-picker__header[aria-expanded='false'] .option-picker__chevron {
   transform: rotate(180deg);
+}
+
+.option-picker__header[aria-expanded='false'] {
+  border-radius: 4px;
 }
 
 .option-picker__card {
