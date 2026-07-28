@@ -4,6 +4,15 @@
   max-width: 392px;
 }
 
+/*
+ * Keep Cafe24's native text-button controls in the DOM so its purchase
+ * scripts can still operate them. The row is identified by its native
+ * `.ec-product-button` control rather than its position in the table.
+ */
+table.xans-product-option tr:has(.ec-product-button) {
+  display: none !important;
+}
+
 .option-picker__list {
   display: flex;
   flex-direction: column;
