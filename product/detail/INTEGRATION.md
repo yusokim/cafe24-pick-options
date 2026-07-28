@@ -59,6 +59,7 @@
 /js/custom/option-picker/ui/option-picker-view.js
 /js/custom/option-picker/ui/mobile-option-sheet-view.js
 /js/custom/option-picker/utils/dom.js
+/css/custom/product-detail-responsive.css
 ```
 
 CSS는 `detail.html` 상단의 기존 CSS 지시문 바로 다음에 추가합니다.
@@ -73,14 +74,14 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 ```html
             </table>
 
-            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260728-31"></script>
+            <script type="module" src="/js/custom/option-picker/option-picker.js"></script>
 
             <dl module="product_quantity" class="ec-base-desc quantity">
 ```
 
 상품 설정을 추가하기 전에 업로드한 JavaScript가 `type="module"`로 정상 로드되는지 확인합니다.
 
-카페24 CDN은 같은 경로의 JavaScript 이전 버전을 유지할 수 있습니다. JavaScript 파일을 교체할 때는 `asset-tags.html`과 변경된 모듈을 import하는 파일의 `v` 값을 같은 새 값으로 변경해 업로드합니다.
+제출 최종본은 캐시 무효화용 쿼리 문자열 없이 위 경로를 사용합니다. 시크릿 창은 로그인·브라우저 캐시 영향을 분리하는 검증 수단이며 CDN 캐시를 강제로 비우지는 않습니다. 파일을 저장·대표 디자인으로 설정한 뒤, 네트워크 탭에서 위 파일 경로의 최신 응답이 내려오는지 확인합니다.
 
 `767px` 이하에서는 같은 `option-picker.js`가 옵션 피커를 바텀시트로 렌더링합니다. 별도 모바일 템플릿이나 JavaScript를 추가하지 않습니다. 선택상품이 없을 때 장바구니·구매 버튼을 누르면 바텀시트가 열리고, 옵션 선택이 카페24에 반영된 뒤에는 기존 구매 흐름을 사용합니다. 구매 버튼 영역을 찾지 못하면 옵션 선택 트리거를 대신 노출합니다.
 
@@ -95,7 +96,7 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 
 ## 상품상세 본문 반응형 레이아웃
 
-상품 이미지와 정보 영역까지 시안에 맞춰 반응형으로 적용하려면 `product-detail-responsive.css`를 `/css/custom/`에 업로드하고, 기존 상품상세 CSS 지시문 다음에 아래를 추가합니다.
+상품 이미지와 정보 영역까지 시안에 맞춰 반응형으로 적용하려면 위 목록의 `product-detail-responsive.css`를 `/css/custom/`에 업로드하고, 기존 상품상세 CSS 지시문 다음에 아래를 추가합니다.
 
 ```html
 <!--@css(/css/custom/product-detail-responsive.css)-->

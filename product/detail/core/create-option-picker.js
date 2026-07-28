@@ -1,5 +1,5 @@
-import { createOptionPickerView } from '../ui/option-picker-view.js?v=20260728-18';
-import { createSelectionReconciler } from '../services/selection-reconciler.js?v=20260728-18';
+import { createOptionPickerView } from '../ui/option-picker-view.js';
+import { createSelectionReconciler } from '../services/selection-reconciler.js';
 
 /**
  * Coordinates rendering and synchronisation. It contains no Cafe24 selector

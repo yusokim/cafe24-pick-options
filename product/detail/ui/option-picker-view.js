@@ -202,12 +202,15 @@ export function createOptionPickerView({ root, groups }) {
 
         card.disabled = isSelectionDisabled;
         card.classList.toggle('is-selected', selectedCount > 0);
+        card.classList.toggle('is-updating', isUpdating);
         card.setAttribute('aria-pressed', String(selectedCount > 0));
+        card.setAttribute('aria-busy', String(isUpdating));
         card.setAttribute(
           'aria-label',
           `${card.querySelector('.option-picker__label').textContent}, ${selectedCount} / ${limit} 선택`
         );
         selectedOption.element.hidden = selectedCount === 0;
+        selectedOption.element.setAttribute('aria-busy', String(isUpdating));
         selectedOption.count.textContent = String(selectedCount);
         selectedOption.decrementButton.disabled = isUpdating || selectedCount === 0;
         selectedOption.incrementButton.disabled = isUpdating || selectedCount >= limit;

@@ -1,122 +1,223 @@
 /**
  * Keeps one Cafe24 suffix option selected for each pack group.
  * The suffix index is the pack count: `_1` means 1, `_2` means 2.
+ *
+ * Cafe24 rebuilds the selected-product DOM asynchronously. Every native
+ * remove/select operation is therefore processed through one global queue.
  */
+const TRANSITION_TIMEOUT_MS = 1500;
+
 export function createSelectionReconciler({ config, adapter, view }) {
   let stopObserving = null;
-  const transitions = new Map();
+  let activeTransition = null;
+  const pendingTargets = new Map();
 
   function getGroup(groupId) {
     return config.groups.find((group) => group.id === groupId);
   }
 
+  function getSelectedOptionValues(group, selectedValues) {
+    return group.optionValues.filter((value) => selectedValues.has(value));
+  }
+
   function getSelectedOptionValue(group, selectedValues) {
-    return [...group.optionValues].reverse().find((value) => selectedValues.has(value)) || null;
+    return [...getSelectedOptionValues(group, selectedValues)].reverse()[0] || null;
+  }
+
+  function getSelectedCount(group, selectedValues) {
+    const optionValue = getSelectedOptionValue(group, selectedValues);
+    return optionValue ? group.optionValues.indexOf(optionValue) + 1 : 0;
+  }
+
+  function isCanonicalSelection(group, selectedValues) {
+    return getSelectedOptionValues(group, selectedValues).length <= 1;
   }
 
   function getGroupState(group, selectedValues) {
-    const selectedOptionValue = getSelectedOptionValue(group, selectedValues);
-    const selectedIndex = selectedOptionValue ? group.optionValues.indexOf(selectedOptionValue) : -1;
-    const transition = transitions.get(group.id);
-    const isUpdating = Boolean(transition);
-    const transitionOptionValue =
-      transition?.toOptionValue || transition?.displayOptionValue || null;
-    const transitionIndex = transitionOptionValue
-      ? group.optionValues.indexOf(transitionOptionValue)
-      : -1;
-    const selectedCount = isUpdating ? transitionIndex + 1 : selectedIndex + 1;
+    const activeForGroup = activeTransition?.groupId === group.id ? activeTransition : null;
+    const selectedCount = activeForGroup
+      ? activeForGroup.targetCount
+      : getSelectedCount(group, selectedValues);
 
     return {
       id: group.id,
       selectedCount,
       limit: group.maxSelectable ?? group.optionValues.length,
       isSelectionDisabled: selectedCount > 0,
-      isUpdating
+      isUpdating: Boolean(activeTransition)
     };
   }
 
-  function advanceTransition(groupId, selectedValues) {
-    const transition = transitions.get(groupId);
+  function render(selectedValues = new Set(adapter.getSelectedOptionValues())) {
+    view.updateStates(config.groups.map((group) => getGroupState(group, selectedValues)));
+  }
+
+  function clearActiveTransition() {
+    if (!activeTransition) return;
+    clearTimeout(activeTransition.timeoutId);
+    activeTransition = null;
+  }
+
+  function failActiveTransition(reason) {
+    const transition = activeTransition;
     if (!transition) return;
 
-    const { removeOptionValues, toOptionValue } = transition;
-    const nextOptionValueToRemove = removeOptionValues.find((value) => selectedValues.has(value));
+    console.warn('[option-picker] Cafe24 option transition failed.', {
+      groupId: transition.groupId,
+      targetCount: transition.targetCount,
+      reason
+    });
+    clearActiveTransition();
+  }
 
-    if (nextOptionValueToRemove) {
-      if (!adapter.removeOptionValue(nextOptionValueToRemove)) {
-        transitions.delete(groupId);
-      }
+  function createTransition(group, targetCount, selectedValues) {
+    const selectedOptionValues = getSelectedOptionValues(group, selectedValues);
+    const targetOptionValue = targetCount > 0 ? group.optionValues[targetCount - 1] : null;
+    const removeOptionValues = selectedOptionValues.filter((value) => value !== targetOptionValue).reverse();
+    const steps = removeOptionValues.map((value) => ({ type: 'remove', value }));
+
+    if (targetOptionValue && !selectedValues.has(targetOptionValue)) {
+      steps.push({ type: 'select', value: targetOptionValue });
+    }
+
+    return {
+      groupId: group.id,
+      targetCount,
+      steps,
+      timeoutId: null,
+      waiting: false
+    };
+  }
+
+  function getRepairTarget(selectedValues) {
+    const invalidGroup = config.groups.find((group) => !isCanonicalSelection(group, selectedValues));
+    if (!invalidGroup) return null;
+
+    return {
+      groupId: invalidGroup.id,
+      targetCount: getSelectedCount(invalidGroup, selectedValues)
+    };
+  }
+
+  function startNextTransition(selectedValues) {
+    if (activeTransition) return;
+
+    const repairTarget = getRepairTarget(selectedValues);
+    const nextTarget = repairTarget || pendingTargets.entries().next().value;
+    if (!nextTarget) return;
+
+    const [groupId, targetCount] = Array.isArray(nextTarget)
+      ? nextTarget
+      : [nextTarget.groupId, nextTarget.targetCount];
+    pendingTargets.delete(groupId);
+
+    const group = getGroup(groupId);
+    if (!group) return;
+
+    const limit = group.maxSelectable ?? group.optionValues.length;
+    if (targetCount < 0 || targetCount > limit) return;
+
+    const currentCount = getSelectedCount(group, selectedValues);
+    if (targetCount === currentCount && isCanonicalSelection(group, selectedValues)) {
+      startNextTransition(selectedValues);
       return;
     }
 
-    if (toOptionValue && !selectedValues.has(toOptionValue)) {
-      if (!adapter.selectOptionValue(toOptionValue)) {
-        transitions.delete(groupId);
-      }
+    activeTransition = createTransition(group, targetCount, selectedValues);
+    advanceActiveTransition(selectedValues);
+  }
+
+  function scheduleSync() {
+    queueMicrotask(sync);
+  }
+
+  function runActiveStep(step) {
+    if (!activeTransition || activeTransition.waiting) return;
+
+    activeTransition.waiting = true;
+    const succeeded = step.type === 'remove'
+      ? adapter.removeOptionValue(step.value)
+      : adapter.selectOptionValue(step.value);
+
+    if (!succeeded) {
+      failActiveTransition(`${step.type}:${step.value}`);
+      scheduleSync();
       return;
     }
 
-    transitions.delete(groupId);
+    activeTransition.timeoutId = setTimeout(() => {
+      failActiveTransition(`timeout:${step.type}:${step.value}`);
+      sync();
+    }, TRANSITION_TIMEOUT_MS);
+    scheduleSync();
+  }
+
+  function advanceActiveTransition(selectedValues) {
+    if (!activeTransition) return;
+
+    const step = activeTransition.steps[0];
+    if (!step) {
+      clearActiveTransition();
+      startNextTransition(selectedValues);
+      return;
+    }
+
+    const stepCompleted = step.type === 'remove'
+      ? !selectedValues.has(step.value)
+      : selectedValues.has(step.value);
+
+    if (stepCompleted) {
+      clearTimeout(activeTransition.timeoutId);
+      activeTransition.timeoutId = null;
+      activeTransition.waiting = false;
+      activeTransition.steps.shift();
+      advanceActiveTransition(selectedValues);
+      return;
+    }
+
+    runActiveStep(step);
   }
 
   function sync() {
     const selectedValues = new Set(adapter.getSelectedOptionValues());
 
-    transitions.forEach((_, groupId) => advanceTransition(groupId, selectedValues));
+    if (activeTransition) advanceActiveTransition(selectedValues);
+    if (!activeTransition) startNextTransition(selectedValues);
 
-    const refreshedSelectedValues = new Set(adapter.getSelectedOptionValues());
-    const states = config.groups.map((group) => getGroupState(group, refreshedSelectedValues));
-    view.updateStates(states);
+    render(new Set(adapter.getSelectedOptionValues()));
   }
 
-  function transitionToCount(groupId, targetCount) {
+  function requestCount(groupId, targetCount) {
     const group = getGroup(groupId);
-    if (!group || transitions.has(groupId)) return false;
+    if (!group || activeTransition?.groupId === groupId) return false;
 
     const selectedValues = new Set(adapter.getSelectedOptionValues());
-    const selectedOptionValues = group.optionValues.filter((value) => selectedValues.has(value));
-    const currentOptionValue = getSelectedOptionValue(group, selectedValues);
-    const currentCount = currentOptionValue ? group.optionValues.indexOf(currentOptionValue) + 1 : 0;
     const limit = group.maxSelectable ?? group.optionValues.length;
+    const currentCount = getSelectedCount(group, selectedValues);
+    if (targetCount < 0 || targetCount > limit) return false;
+    if (targetCount === currentCount && isCanonicalSelection(group, selectedValues)) return false;
 
-    if (targetCount < 0 || targetCount > limit || targetCount === currentCount) return false;
-
-    const toOptionValue = targetCount === 0 ? null : group.optionValues[targetCount - 1];
-    transitions.set(groupId, {
-      toOptionValue,
-      displayOptionValue: currentOptionValue,
-      removeOptionValues:
-        targetCount === 0 ? [...selectedOptionValues].reverse() : [currentOptionValue].filter(Boolean)
-    });
-
+    pendingTargets.set(groupId, targetCount);
     sync();
     return true;
   }
 
   return {
     requestInitialOption(groupId) {
-      return transitionToCount(groupId, 1);
+      return requestCount(groupId, 1);
     },
     incrementGroup(groupId) {
       const group = getGroup(groupId);
       if (!group) return false;
-
-      const selectedValues = new Set(adapter.getSelectedOptionValues());
-      const currentOptionValue = getSelectedOptionValue(group, selectedValues);
-      const currentCount = currentOptionValue ? group.optionValues.indexOf(currentOptionValue) + 1 : 0;
-      return transitionToCount(groupId, currentCount + 1);
+      return requestCount(groupId, getSelectedCount(group, new Set(adapter.getSelectedOptionValues())) + 1);
     },
     decrementGroup(groupId) {
       const group = getGroup(groupId);
       if (!group) return false;
-
-      const selectedValues = new Set(adapter.getSelectedOptionValues());
-      const currentOptionValue = getSelectedOptionValue(group, selectedValues);
-      const currentCount = currentOptionValue ? group.optionValues.indexOf(currentOptionValue) + 1 : 0;
-      return transitionToCount(groupId, currentCount - 1);
+      return requestCount(groupId, getSelectedCount(group, new Set(adapter.getSelectedOptionValues())) - 1);
     },
     clearGroup(groupId) {
-      return transitionToCount(groupId, 0);
+      return requestCount(groupId, 0);
     },
     start() {
       sync();
@@ -125,7 +226,8 @@ export function createSelectionReconciler({ config, adapter, view }) {
     stop() {
       stopObserving?.();
       stopObserving = null;
-      transitions.clear();
+      clearActiveTransition();
+      pendingTargets.clear();
     }
   };
 }
