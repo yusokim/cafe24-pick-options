@@ -626,7 +626,7 @@ table.xans-product-option tr:has(.ec-product-button) {
     grid-auto-rows: max-content;
     gap: 8px;
     min-height: 0;
-    padding: 8px 20px calc(8px + var(--option-picker-mobile-action-height));
+    padding: 8px 20px;
     overflow-y: auto;
     overscroll-behavior: contain;
   }
@@ -670,7 +670,7 @@ table.xans-product-option tr:has(.ec-product-button) {
 
   .option-picker-sheet-open { overflow: hidden; }
 
-  body {
+  body:has(.xans-product-action[data-option-picker-fixed-action='true']) {
     padding-bottom: var(--option-picker-mobile-action-height);
   }
 }

@@ -8,6 +8,7 @@ import { createSelectionReconciler } from '../services/selection-reconciler.js?v
 export function createOptionPicker({ root, config, adapter, createView = createOptionPickerView }) {
   const view = createView({ root, groups: config.groups });
   const reconciler = createSelectionReconciler({ config, adapter, view });
+  const cleanups = [];
 
   return {
     mount() {
@@ -28,7 +29,11 @@ export function createOptionPicker({ root, config, adapter, createView = createO
     },
     destroy() {
       reconciler.stop();
+      cleanups.splice(0).forEach((cleanup) => cleanup());
       view.destroy();
+    },
+    addCleanup(cleanup) {
+      if (typeof cleanup === 'function') cleanups.push(cleanup);
     },
     view() {
       return view;

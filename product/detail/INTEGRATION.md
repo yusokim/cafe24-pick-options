@@ -73,7 +73,7 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 ```html
             </table>
 
-            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260728-26"></script>
+            <script type="module" src="/js/custom/option-picker/option-picker.js?v=20260728-29"></script>
 
             <dl module="product_quantity" class="ec-base-desc quantity">
 ```
@@ -82,7 +82,7 @@ JavaScript는 모듈 간 `import`를 사용하므로 `<!--@js(...)-->`로 추가
 
 카페24 CDN은 같은 경로의 JavaScript 이전 버전을 유지할 수 있습니다. JavaScript 파일을 교체할 때는 `asset-tags.html`과 변경된 모듈을 import하는 파일의 `v` 값을 같은 새 값으로 변경해 업로드합니다.
 
-`767px` 이하에서는 같은 `option-picker.js`가 옵션 피커를 바텀시트로 렌더링합니다. 별도 모바일 템플릿이나 JavaScript를 추가하지 않습니다. 선택상품이 없을 때 장바구니·구매 버튼을 누르면 바텀시트가 열리고, `선택완료` 후에는 기존 카페24 구매 흐름을 사용합니다.
+`767px` 이하에서는 같은 `option-picker.js`가 옵션 피커를 바텀시트로 렌더링합니다. 별도 모바일 템플릿이나 JavaScript를 추가하지 않습니다. 선택상품이 없을 때 장바구니·구매 버튼을 누르면 바텀시트가 열리고, 옵션 선택이 카페24에 반영된 뒤에는 기존 구매 흐름을 사용합니다. 구매 버튼 영역을 찾지 못하면 옵션 선택 트리거를 대신 노출합니다.
 
 ## 5. 스토어프론트에서 DOM 어댑터 검증
 

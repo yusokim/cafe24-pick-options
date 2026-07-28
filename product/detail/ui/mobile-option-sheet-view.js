@@ -33,12 +33,29 @@ export function createMobileOptionSheetView({ root, groups }) {
   let layer;
   let trigger;
   let selectedTotal = 0;
+  let isUpdating = false;
+  let showEmptyTrigger = false;
+  let lastFocusedElement;
+  let closeButton;
 
-  function setOpen(isOpen) {
+  function getFocusableElements() {
+    return Array.from(layer?.querySelectorAll(
+      'button:not([disabled]):not([tabindex="-1"]), [href]:not([tabindex="-1"])'
+    ) || []).filter((element) => !element.hidden && !element.closest('[hidden]'));
+  }
+
+  function setOpen(isOpen, origin = trigger) {
     if (!layer) return;
     layer.hidden = !isOpen;
     trigger.setAttribute('aria-expanded', String(isOpen));
     document.documentElement.classList.toggle('option-picker-sheet-open', isOpen);
+
+    if (isOpen) {
+      lastFocusedElement = origin;
+      requestAnimationFrame(() => closeButton?.focus());
+    } else if (lastFocusedElement?.isConnected && !lastFocusedElement.hidden) {
+      lastFocusedElement.focus();
+    }
   }
 
   return {
@@ -67,7 +84,8 @@ export function createMobileOptionSheetView({ root, groups }) {
       const backdrop = createElement('button', {
         className: 'option-picker-sheet__backdrop',
         type: 'button',
-        'aria-label': '옵션 선택 닫기'
+        'aria-label': '옵션 선택 닫기',
+        tabindex: '-1'
       });
       backdrop.addEventListener('click', () => setOpen(false));
       const sheet = createElement('section', {
@@ -77,15 +95,15 @@ export function createMobileOptionSheetView({ root, groups }) {
         'aria-modal': 'true'
       });
       const header = createElement('div', { className: 'option-picker-sheet__header' });
-      const close = createElement('button', {
+      closeButton = createElement('button', {
         className: 'option-picker-sheet__close', type: 'button', 'aria-label': '옵션 선택 닫기'
       });
-      close.append(createIcon('M5 5L19 19M19 5L5 19'));
-      close.addEventListener('click', () => setOpen(false));
+      closeButton.append(createIcon('M5 5L19 19M19 5L5 19'));
+      closeButton.addEventListener('click', () => setOpen(false));
       header.append(
         createElement('span', { className: 'option-picker-sheet__handle', 'aria-hidden': 'true' }),
         createElement('strong', { className: 'option-picker-sheet__title', text: '옵션 선택 (필수)' }),
-        close
+        closeButton
       );
 
       const list = createElement('div', { className: 'option-picker-sheet__list' });
@@ -139,14 +157,35 @@ export function createMobileOptionSheetView({ root, groups }) {
       });
 
       sheet.append(header, list, selectedList);
+      sheet.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          setOpen(false);
+          return;
+        }
+        if (event.key !== 'Tab') return;
+
+        const focusableElements = getFocusableElements();
+        const first = focusableElements[0];
+        const last = focusableElements.at(-1);
+        if (!first || !last) return;
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
       layer.append(backdrop, sheet);
       root.append(trigger, layer);
     },
     updateStates(states) {
       selectedTotal = states.reduce((total, state) => total + state.selectedCount, 0);
+      isUpdating = states.some((state) => state.isUpdating);
       trigger.querySelector('.option-picker-sheet__trigger-label').textContent = selectedTotal
         ? `선택한 옵션 ${selectedTotal}개` : '옵션 선택 (필수)';
-      trigger.hidden = selectedTotal === 0;
+      trigger.hidden = selectedTotal === 0 && !showEmptyTrigger;
       layer.querySelector('.option-picker-sheet__selected-list').hidden = selectedTotal === 0;
       states.forEach(({ id, selectedCount, limit, isSelectionDisabled, isUpdating }) => {
         const card = cards.get(id);
@@ -164,7 +203,12 @@ export function createMobileOptionSheetView({ root, groups }) {
       });
     },
     hasSelectedOptions() { return selectedTotal > 0; },
-    open() { setOpen(true); },
+    isUpdating() { return isUpdating; },
+    setPurchaseActionAvailable(isAvailable) {
+      showEmptyTrigger = !isAvailable;
+      trigger.hidden = selectedTotal === 0 && !showEmptyTrigger;
+    },
+    open(origin) { setOpen(true, origin); },
     destroy() {
       document.documentElement.classList.remove('option-picker-sheet-open');
       clearElement(root);

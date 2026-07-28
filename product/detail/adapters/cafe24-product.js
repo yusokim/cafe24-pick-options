@@ -13,6 +13,7 @@ export function createCafe24Adapter(doc) {
   const selectedProductArea = doc.querySelector(
     '[data-option-picker-selected-list], #totalProducts'
   );
+  const totalPriceArea = doc.querySelector('[data-option-picker-total-price], #totalPrice');
 
   function getNativeOptionItems() {
     if (!nativeOptionArea) return [];
@@ -34,6 +35,21 @@ export function createCafe24Adapter(doc) {
     return Array.from(selectedProductArea.querySelectorAll('tr, [id^="option_box"]')).find((row) =>
       row.textContent.includes(optionValue)
     );
+  }
+
+  function getPurchaseAction() {
+    return Array.from(doc.querySelectorAll('.xans-product-action')).find((element) => (
+      element.querySelector("a[onclick*='product_submit(1']")
+    )) || null;
+  }
+
+  function getTotalPriceText() {
+    if (!totalPriceArea) return null;
+
+    const totalValue = totalPriceArea.querySelector(
+      '[data-option-picker-total-value], .total em, .total strong, .total'
+    )?.textContent || '';
+    return /\d/.test(totalValue) ? totalValue : null;
   }
 
   return {
@@ -85,6 +101,20 @@ export function createCafe24Adapter(doc) {
       return getKnownOptionValues().filter((optionValue) =>
         selectedProductText.includes(optionValue)
       );
+    },
+    getPurchaseAction,
+    getTotalPriceText,
+    observePurchaseSummary(callback) {
+      const observer = new MutationObserver(callback);
+      [selectedProductArea, totalPriceArea].filter(Boolean).forEach((element) => {
+        observer.observe(element, {
+          attributes: true,
+          childList: true,
+          characterData: true,
+          subtree: true
+        });
+      });
+      return () => observer.disconnect();
     }
   };
 }
